@@ -543,6 +543,10 @@ public class SolrRDD implements Serializable {
       probeForFieldsQuery.setRows(10);
       QueryResponse probeForFieldsResp = solrServer.query(probeForFieldsQuery);
       SolrDocumentList hits = probeForFieldsResp.getResults();
+      if (hits.getNumFound() < 1) {
+          scala.Option<Object> x = scala.Option.apply(null);
+          throw new AnalysisException("Query ("+query+") does not return any documents from Solr!", x, x);
+      }
       Set<String> fieldSet = new TreeSet<String>();
       for (SolrDocument hit : hits)
         fieldSet.addAll(hit.getFieldNames());
