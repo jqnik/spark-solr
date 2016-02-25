@@ -627,20 +627,27 @@ public class SolrRDD implements Serializable {
         continue;
 
       SolrFieldMeta tvc = null;
-      for (Map<String,Object> map : fieldInfoFromSolr) {
-        String fieldName = (String)map.get("name");
-        if (field.equals(fieldName)) {
-          tvc = new SolrFieldMeta();
-          tvc.fieldType = (String)map.get("type");
+    // be able to include score in the results
+	if (field.equals("score")) {
+	  tvc = new SolrFieldMeta();
+	  tvc.isMultiValued = false;
+	  tvc.fieldType = "float";
+	} else {
+	      for (Map<String,Object> map : fieldInfoFromSolr) {
+		String fieldName = (String)map.get("name");
+		if (field.equals(fieldName)) {
+		  tvc = new SolrFieldMeta();
+		  tvc.fieldType = (String)map.get("type");
 
-          Object multiValued = map.get("multiValued");
-          if (multiValued != null && multiValued instanceof Boolean) {
-            tvc.isMultiValued = ((Boolean)multiValued).booleanValue();
-          } else {
-            tvc.isMultiValued = "true".equals(String.valueOf(multiValued));
-          }
-        }
-      }
+		  Object multiValued = map.get("multiValued");
+		  if (multiValued != null && multiValued instanceof Boolean) {
+		    tvc.isMultiValued = ((Boolean)multiValued).booleanValue();
+		  } else {
+		    tvc.isMultiValued = "true".equals(String.valueOf(multiValued));
+		  }
+		}
+	      }
+	}
 
       if (tvc == null || tvc.fieldType == null) {
         String errMsg = "Can't figure out field type for field: " + field + ". Check you Solr schema and retry.";

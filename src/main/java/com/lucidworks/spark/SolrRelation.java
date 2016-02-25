@@ -125,7 +125,8 @@ public class SolrRelation extends BaseRelation implements Serializable, TableSca
     for (String key : configMap.keySet()) {
       if (key.startsWith("solr.")) {
         String param = key.substring(5);
-        if ("q".equals(param) || "fl".equals(param) || "rows".equals(param))
+        // This used to skip the field list specification, but we need it to include the score field
+        if ("q".equals(param) || "rows".equals(param))
           continue;
 
         String val = configMap.get(key);
