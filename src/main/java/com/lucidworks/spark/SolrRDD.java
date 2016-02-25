@@ -549,8 +549,10 @@ public class SolrRDD implements Serializable {
       fields = fieldSet.toArray(new String[0]);
     }
 
-    if (fields == null || fields.length == 0)
-      throw new AnalysisException("Query ("+query+") does not specify any fields needed to build a schema!", null, null);
+    if (fields == null || fields.length == 0) {
+        scala.Option<Object> x = scala.Option.apply(null);
+        throw new AnalysisException("Query ("+query+") does not specify any fields needed to build a schema!", null, null);
+    }
 
     Set<String> liveNodes = solrServer.getZkStateReader().getClusterState().getLiveNodes();
     if (liveNodes.isEmpty())
